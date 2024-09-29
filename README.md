@@ -58,6 +58,7 @@ sudo apt-get install git
 git clone https://github.com/devops-and-more/Multi-tier-app.git
 ```
 * Modify Apache configs:
+To point to the app directory and to allow cgi
 ```bash
 # Change DocumentRoot to point to /var/www/html/appdemo
 # This command updates the DocumentRoot in the Apache configuration
@@ -77,6 +78,10 @@ sudo sed -i '/<VirtualHost \*:80>/a \
     Options +ExecCGI \
     DirectoryIndex index.py \
 </Directory>' /etc/apache2/sites-available/000-default.conf
+```
+Changing Listen 80 to Listen 0.0.0.0:80: This modification makes Apache listen for incoming connections on port 80 from any IP address (0.0.0.0) rather than just the local host.
+```bash
+sudo sed -i 's|Listen 80|Listen 0.0.0.0:80|' /etc/apache2/ports.conf
 ```
 ### Web server configs:
 ### App server configs:
