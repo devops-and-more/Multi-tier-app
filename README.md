@@ -1,31 +1,31 @@
 # Multi Tiered Web Application 
 
-##Author:
+##Original repo:
 
-Brantley Richbourg (brichbourg@gmail.com)
+https://github.com/brichbourg/Multi-Tier-App-Demo
+ by:Brantley Richbourg (brichbourg@gmail.com)
 
-I am a network/systems engineer that is trying to teach myself Python programming.  I am not a developer so please feel free to fork this repo and clean up/improve my code as I am still learning.  
-
+This is a modified repo, multiple updates has been done the python codes, the origin repo has various errors : syntax error, command error...etc 
+I will create a video for this repo to run the whole configurations under:
+1- VMS/EC2: the youtube video:
+2- Docker/Kubernetes:
+This repo comes with a vagrant file to provision the machines under Virtual box, to use the vagrant file you have to install vagrant.
 ##Information
+This is python based web application which we had done back in the days when I was in a training as "Devops Engineer" at m2iformation who was hiring Ilkilab trainers to guide us through, we were more interested by the CI/CD so we didn't care about the code if it is working or not. My work here was to correct the code and update it to be compatible with python3 and ubuntu 22.
+This app is very simple, we have :
+- A front web page hosted on apache2 in the web server.
+- An app behind the web page which is responsible for quering the data from the database, an apache2 also installed on this server(app server) to allow the web server to make http requests to the app server.
+- A Mysql server which hold our database.
+In the Front page we could either: view the table in the database, insert an element or clear the table on the database.
+the original repo had some issues in querying the data, Http requests, clearing the table, and connecting to the database after clearing the table and other issues likes parsing the html response, some commands in python was deprecated like (urllib.urlopen) and others.
+The versions of the systems used:
 
-This is a VERY basic Python based web application I created to be used to demo with SDN environments (Cisco ACI, VMWare NSX, etc).  This application uses a web server Apache2, a "app" server with Apache2 as well, and MySQL as the backend database to function.  The idea is to run the web front end portons of the app on the WEB server with the python scripts.  These scripts will then make HTTP requests to the APP server running Apache2, where those scripts will take the data received and make the SQL calls to the back end MySQL server. 
+* bento/ubuntu-22.04
+* Python3: Python 3.10.12
+* Apache/2.4.52 (Ubuntu)
+* MySQL Ver 8.0.39-0ubuntu0.22.04.1 for Linux on x86_64 ((Ubuntu))
 
-The idea is to manipulate network policies between Web <--> App<--> MySQL break to application, hence showing the network security policies or contracts work as expected.  
 
-I've also added separate web and app server information displays.  This could be used for demoing load-balancing solutions that are also configured within the SDN application (F5, NSX, Citrix, etc.)
-
-The functions created allow a user to view contents, add records to, and erase the contents of a MySQL database. 
-
-This application is provided "as-is".
-
-Here are the versions of the systems I used when creating it:
-
-* Ubuntu Linux 14.04.3 LTS
-* Python 2.7.6
-* Apache 2.4.7 
-* MySQL Ver 14.14 Distrib 5.5.46
-
-NOTE: These instructions are to be used on "clean" server installations.  Use with existing Apache2 and MySQL systems as your own risk!!!
 
 ##Screenshots
 
@@ -37,6 +37,29 @@ Here is a screenshot of the application.
 
 ## Installation Instructions
 
+### Web and App servers:
+* install apache2 on both servers:
+```bash
+sudo apt update
+sudo apt install apache2 -y
+\```
+* Install Python3/PiP
+```bash
+sudo apt update
+sudo apt install python3 python3-pip -y
+\```
+* Clone the repo:
+```bash
+sudo apt-get install git
+git clone https://github.com/devops-and-more/Multi-tier-app.git
+\```
+
+ ### Web server configs:
+### App server configs:
+* install package to allow app servers connecting to mysql
+```bash
+pip install mysql-connector-python
+\```
 ###Web Server Installation (Required)
 
 * Update Advanced Packaging Tool
@@ -53,7 +76,7 @@ Here is a screenshot of the application.
 
 		sudo apt-get install apache2
 
-* Install PIP
+* Install PythPIP
 
 		sudo apt-get install python-pip
 
