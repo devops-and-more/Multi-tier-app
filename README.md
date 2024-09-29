@@ -57,7 +57,27 @@ sudo apt install python3 python3-pip -y
 sudo apt-get install git
 git clone https://github.com/devops-and-more/Multi-tier-app.git
 ```
+* Modify Apache configs:
+```bash
+# Change DocumentRoot to point to /var/www/html/appdemo
+# This command updates the DocumentRoot in the Apache configuration
+# to serve files from the new application directory.
+sudo sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/appdemo|' /etc/apache2/sites-available/000-default.conf
 
+# Remove the existing <Directory> section in 000-default.conf
+# This command deletes any existing <Directory> sections for /var/www/html
+# to avoid conflicts or duplication in the configuration.
+sudo sed -i '/<Directory \/var\/www\/html>/,/<\/Directory>/d' /etc/apache2/sites-available/000-default.conf
+
+# Append new <Directory> section directly after <VirtualHost *:80>
+# This command inserts a new <Directory> block to allow CGI execution
+# and set 'index.py' as the default file when accessing the directory.
+sudo sed -i '/<VirtualHost \*:80>/a \
+<Directory /var/www/html> \
+    Options +ExecCGI \
+    DirectoryIndex index.py \
+</Directory>' /etc/apache2/sites-available/000-default.conf
+```
 ### Web server configs:
 ### App server configs:
 * Install package to allow app servers to connect to MySQL:
@@ -95,9 +115,9 @@ sudo pip install pymysql
 
 * Run the following commands to make some changes to how Apache operates:
 ```bash
-sudo a2dismod mpm_event
-sudo a2enmod mpm_prefork cgi
-sudo service apache2 restart
+sudo a2dismod mpm_event  # Disable the event MPM module
+sudo a2enmod mpm_prefork cgi  # Enable the prefork MPM and CGI module
+sudo service apache2 restart  # Restart Apache to apply changes
 ```
 
 * Run the following commands:
