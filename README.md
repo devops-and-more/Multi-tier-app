@@ -98,7 +98,7 @@ sudo systemctl restart apache2
 
 ```bash
 sudo sed -i 's|Listen 80|Listen localhost:8080\nListen web:8080|' /etc/apache2/ports.conf
-sudo sed -i 's|<VirtualHost \*:80>|<VirtualHost localhost:8080 web:8080>|' /etc/apache2/sites-available/000-default.conf# note that I used \* otherwise sed will not find a match
+sudo sed -i 's|<VirtualHost \*:80>|<VirtualHost localhost:8080 web:8080>|' /etc/apache2/sites-available/000-default.conf # note that I used \* otherwise sed will not find a match
 ```
 * Install package to allow app servers to connect to MySQL:
 ```bash
