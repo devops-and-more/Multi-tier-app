@@ -120,7 +120,7 @@ Becareful the well functioning of the app depends on this!!!
 install mysql:
 ```bash
 sudo apt-get update
-sudo apt-get install mysql-server
+sudo apt-get install mysql-server -y
 ```
 * Download the initial SQL file:
 ```bash
