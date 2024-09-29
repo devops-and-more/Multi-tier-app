@@ -57,7 +57,13 @@ sudo apt install python3 python3-pip -y
 sudo apt-get install git
 git clone https://github.com/devops-and-more/Multi-tier-app.git
 ```
-* Modify Apache configs:
+* run the script dedecated to place the files inside /var/www/html/, if you have some issues with the script you can copy the files manually:
+```bash
+cd Multi-Tier-App-Demo/
+sudo bash install.sh
+```
+  
+* Modify Apaches configs:
 To point to the app directory and to allow cgi
 ```bash
 # Change DocumentRoot to point to /var/www/html/appdemo
@@ -79,16 +85,89 @@ sudo sed -i '/<VirtualHost \*:80>/a \
     DirectoryIndex index.py \
 </Directory>' /etc/apache2/sites-available/000-default.conf
 ```
+
+### Web server configs:
+The web server needs to accept all inbound connections therefore:
 Changing Listen 80 to Listen 0.0.0.0:80: This modification makes Apache listen for incoming connections on port 80 from any IP address (0.0.0.0) rather than just the local host.
 ```bash
 sudo sed -i 's|Listen 80|Listen 0.0.0.0:80|' /etc/apache2/ports.conf
+sudo systemctl restart apache2
 ```
-### Web server configs:
 ### App server configs:
+* Configure apache to listen on port 8080 (just to distinguish between the two) to the connections comming from localhost and web server only, this is for security reasons
+
+```bash
+sudo sed -i 's|Listen 80|Listen localhost:8080\nListen web:8080|' /etc/apache2/ports.conf
+sudo sed -i 's|<VirtualHost \*:80>|<VirtualHost localhost:8080 web:8080>|' /etc/apache2/sites-available/000-default.conf# note that I used \* otherwise sed will not find a match
+```
 * Install package to allow app servers to connect to MySQL:
 ```bash
 pip install mysql-connector-python
 ```
+ the `/etc/mtwa/mtwa.conf` file looks like:
+```bash
+# Multi-Tier-App-Demo configuration file
+
+# Enter the name of the app server or load balancer (DNS or IP address; DNS preferred)
+AppServerName = app
+# Enter the name of the MySQL server (DNS or IP address; DNS preferred)
+DBServerName = db
+```
+those two dns names are already configured inside /etc/hosts, if you use diffrent names you should change the file here to match your /etc/hosts file.
+Becareful the well functioning of the app depends on this!!!
+
+### Mysql server:
+install mysql:
+```bash
+sudo apt-get update
+sudo apt-get install mysql-server
+```
+* Download the initial SQL file:
+```bash
+wget "https://github.com/devops-and-more/Multi-tier-app/tree/master/sql/create_db_table.sql"
+```
+
+* Now log into your MySQL server as root where your pwd should contains the downloaded file (.sql); because you need it once you are inside mysql:
+```bash
+mysql -u root -p
+# <enter your root password>
+# after logging create the table from the file
+source ~/create_db_table.sql;
+```
+
+Here is the SQL code being injected:
+```sql
+CREATE DATABASE `appdemo`;
+USE `appdemo`;
+CREATE TABLE `demodata` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(100),
+    `notes` TEXT,
+    `timestamp` TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY (`name`)
+);
+
+CREATE TABLE `demodata_erase_log` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `timestamp` TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY (`timestamp`)
+);
+# Create a new user 'appdemo' that can connect from any host ('%') with the password 'appdemo'.
+CREATE USER 'appdemo'@'%' IDENTIFIED BY 'appdemo';
+# Grant all privileges on the 'appdemo' database to the user 'appdemo', allowing them to grant these privileges to other users.
+GRANT ALL PRIVILEGES ON appdemo.* TO 'appdemo'@'%' WITH GRANT OPTION;
+```
+
+* Edit `/etc/mysql/mysql.conf.d/mysqld.cnf` to allow for network connections. Use VI or NANO to edit and change `bind-address = 127.0.0.1` to `bind-address = *`. This will tell MySQL to listen for connections on port TCP:3306 on all interfaces:
+
+sudo sed -i bind-address = 127.0.0.1|bind-address = * /etc/mysql/mysql.conf.d/mysqld.cnf
+
+
+### ####################################################################################"""
+## ####################################################################################"""""""
+
 ### Web Server Installation (Required)
 
 * Update Advanced Packaging Tool:
@@ -97,52 +176,7 @@ sudo apt-get update
 sudo apt-get dist-upgrade
 ```
 
-* Clone this repo somewhere to your server:
-```bash
-sudo apt-get install git
-git clone https://github.com/brichbourg/Multi-Tier-App-Demo.git
-```
 
-* Install Apache2:
-```bash
-sudo apt-get install apache2
-```
-
-* Install Python Pip:
-```bash
-sudo apt-get install python-pip
-```
-
-* Install Python Packages:
-```bash
-sudo pip install pymysql
-```
-
-* Run the following commands to make some changes to how Apache operates:
-```bash
-sudo a2dismod mpm_event  # Disable the event MPM module
-sudo a2enmod mpm_prefork cgi  # Enable the prefork MPM and CGI module
-sudo service apache2 restart  # Restart Apache to apply changes
-```
-
-* Run the following commands:
-```bash
-wget "https://s3.amazonaws.com/richbourg-s3/mtwa/web/000-default.conf"
-wget "https://s3.amazonaws.com/richbourg-s3/mtwa/web/ports.conf"
-sudo cp 000-default.conf /etc/apache2/sites-enabled/
-sudo cp ports.conf /etc/apache2/
-```
-
-* Now restart the Apache2 service again:
-```bash
-sudo service apache2 restart
-```
-
-* Now `cd` to the directory where you cloned this repo (Multi-Tier-App-Demo) and run the `install.sh` script:
-```bash
-cd Multi-Tier-App-Demo/
-sudo bash install.sh
-```
 
 ### App Server Installation (Required)
 
