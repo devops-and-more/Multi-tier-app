@@ -1,31 +1,31 @@
 # Multi Tiered Web Application 
 
 ## Original repo:
-
 https://github.com/brichbourg/Multi-Tier-App-Demo  
 by: Brantley Richbourg (brichbourg@gmail.com)
 
-This is a modified repo, multiple updates have been done to the Python code; the original repo had various errors: syntax errors, command errors, etc.  
-I will create a video for this repo to run the whole configurations under:  
-1- VMS/EC2: the YouTube video:  
-2- Docker/Kubernetes:  
-This repo comes with a Vagrant file to provision the machines under Virtual Box; to use the Vagrant file, you have to install Vagrant.
+This is a modified repo; multiple updates have been made to the Python codes. The original repo has various errors: syntax errors, command errors, etc.  
+I will create a video for this repo to run the whole configurations under:
+1. VMS/EC2: the YouTube video:
+2. Docker/Kubernetes:
+
+This repo comes with a Vagrant file to provision the machines under Virtual Box. To use the Vagrant file, you have to install Vagrant.
 
 ## Information
-This is a Python-based web application which we developed back in the days when I was in training as a "DevOps Engineer" at m2iformation, which was hiring Ilkilab trainers to guide us through. We were more interested in CI/CD, so we didn't care about whether the code was working or not. My work here was to correct the code and update it to be compatible with Python 3 and Ubuntu 22.  
+This is a Python-based web application that we developed back in the days when I was in training as a "DevOps Engineer" at m2iformation, who was hiring Ilkilab trainers to guide us through. We were more interested in CI/CD, so we didn't care about whether the code was working or not. My work here was to correct the code and update it to be compatible with Python 3 and Ubuntu 22.
+
 This app is very simple; we have:
 - A front web page hosted on Apache2 in the web server.
-- An app behind the web page which is responsible for querying the data from the database; an Apache2 is also installed on this server (app server) to allow the web server to make HTTP requests to the app server.
+- An app behind the web page that is responsible for querying the data from the database. An Apache2 is also installed on this server (app server) to allow the web server to make HTTP requests to the app server.
 - A MySQL server which holds our database.
 
-On the front page, we could either view the table in the database, insert an element, or clear the table in the database.  
-The original repo had some issues with querying the data, HTTP requests, clearing the table, and connecting to the database after clearing the table, as well as other issues like parsing the HTML response; some commands in Python were deprecated (like `urllib.urlopen`) and others.  
+On the front page, we could either: view the table in the database, insert an element, or clear the table in the database. The original repo had some issues in querying the data, HTTP requests, clearing the table, connecting to the database after clearing the table, and other issues like parsing the HTML response. Some commands in Python were deprecated (like `urllib.urlopen`) and others.
 
-The versions of the systems used:
+### The versions of the systems used:
 * bento/ubuntu-22.04
 * Python3: Python 3.10.12
 * Apache/2.4.52 (Ubuntu)
-* MySQL Ver 8.0.39-0ubuntu0.22.04.1 for Linux on x86_64 ((Ubuntu))
+* MySQL Ver 8.0.39-0ubuntu0.22.04.1 for Linux on x86_64 (Ubuntu)
 
 ## Screenshots
 
@@ -33,34 +33,10 @@ Here is a screenshot of the application.
 
 ### Main Menu: 
 
-<div style="display: flex; gap: 10px;">
-    <div style="position: relative; display: inline-block;">
-        <img src="screenshots/view.jpg" alt="Screenshot 1" width="300" 
-             style="display:inline-block; cursor: pointer;" 
-             onmouseover="this.nextElementSibling.style.display='block';" 
-             onmouseout="this.nextElementSibling.style.display='none';" />
-        <div style="display: none; position: absolute; top: -50%; left: 50%; transform: translate(-50%, -100%); z-index: 10;">
-            <img src="screenshots/view.jpg" alt="Screenshot 1 Popup" width="600" style="border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.5);" />
-        </div>
-    </div>
-    <div style="position: relative; display: inline-block;">
-        <img src="screenshots/enterdata.jpg" alt="Screenshot 2" width="300" 
-             style="display:inline-block; cursor: pointer;" 
-             onmouseover="this.nextElementSibling.style.display='block';" 
-             onmouseout="this.nextElementSibling.style.display='none';" />
-        <div style="display: none; position: absolute; top: -50%; left: 50%; transform: translate(-50%, -100%); z-index: 10;">
-            <img src="screenshots/enterdata.jpg" alt="Screenshot 2 Popup" width="600" style="border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.5);" />
-        </div>
-    </div>
-    <div style="position: relative; display: inline-block;">
-        <img src="screenshots/clear.jpg" alt="Screenshot 3" width="300" 
-             style="display:inline-block; cursor: pointer;" 
-             onmouseover="this.nextElementSibling.style.display='block';" 
-             onmouseout="this.nextElementSibling.style.display='none';" />
-        <div style="display: none; position: absolute; top: -50%; left: 50%; transform: translate(-50%, -100%); z-index: 10;">
-            <img src="screenshots/clear.jpg" alt="Screenshot 3 Popup" width="600" style="border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.5);" />
-        </div>
-    </div>
+<div>
+    <img src="screenshots/view.jpg" alt="Screenshot 1" width="300" style="display:inline-block; margin-right:10px;">
+    <img src="screenshots/enterdata.jpg" alt="Screenshot 2" width="300" style="display:inline-block; margin-right:10px;">
+    <img src="screenshots/clear.jpg" alt="Screenshot 3" width="300" style="display:inline-block;">
 </div>
 
 ## Installation Instructions
@@ -82,9 +58,9 @@ sudo apt-get install git
 git clone https://github.com/devops-and-more/Multi-tier-app.git
 ```
 
-### Web Server Configs:
-### App Server Configs:
-* Install package to allow app servers connecting to MySQL:
+### Web server configs:
+### App server configs:
+* Install package to allow app servers to connect to MySQL:
 ```bash
 pip install mysql-connector-python
 ```
@@ -107,7 +83,7 @@ git clone https://github.com/brichbourg/Multi-Tier-App-Demo.git
 sudo apt-get install apache2
 ```
 
-* Install PIP:
+* Install Python Pip:
 ```bash
 sudo apt-get install python-pip
 ```
@@ -145,7 +121,7 @@ sudo bash install.sh
 
 ### App Server Installation (Required)
 
-For the app server, **FOLLOW THE WEB SERVER DIRECTIONS ABOVE**, but make two changes to have Apache2 listen on port 8080 instead of 80.
+For the app server, **FOLLOW THE WEB SERVER DIRECTIONS ABOVE**, but make two changes to have Apache2 listen on port 8080 vs 80.
 
 * Run the following commands:
 ```bash
@@ -187,7 +163,7 @@ mysql -u root -p
 ```
 
 * Run this command.  
-NOTE: The example below assumes you ran the wget command from your home directory. Modify as needed.
+**NOTE**: The example below assumes you ran the wget command from your home directory. Modify as needed:
 ```sql
 mysql> source ~/create_db_table.sql;
 ```
@@ -197,25 +173,74 @@ Here is the SQL code being injected:
 CREATE DATABASE `appdemo`;
 USE `appdemo`;
 CREATE TABLE `demodata` (
-  `id` INTEGER NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(100),
-  `notes` TEXT,
-  `timestamp` TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY (`name`)
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(100),
+    `notes` TEXT,
+    `timestamp` TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY (`name`)
 );
 
 CREATE TABLE `demodata_erase_log` (
-  `id` INTEGER NOT NULL AUTO_INCREMENT,
-  `timestamp` TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY (`timestamp`)
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `timestamp` TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY (`timestamp`)
 );
 
 CREATE USER 'appdemo'@'%' IDENTIFIED BY 'appdemo';
-GRANT ALL PRIVILEGES ON appdemo.* to 'appdemo'@'%' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON appdemo.* TO 'appdemo'@'%' WITH GRANT OPTION;
 ```
 
-* Edit `/etc/mysql/mysql.conf.d/mysqld.cnf` to allow for network connections. Use VI or NANO to edit and change `bind-address = 127.0.0.1` to `bind-address = *`. This will tell MySQL to listen for connections on port TCP:3306 on all interfaces.
+* Edit `/etc/mysql/mysql.conf.d/mysqld.cnf` to allow for network connections. Use VI or NANO to edit and change `bind-address = 127.0.0.1` to `bind-address = *`. This will tell MySQL to listen for connections on port TCP:3306 on all interfaces:
 ```bash
 sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+```
+```
+...
+bind-address = *
+```
+
+* Restart MySQL:
+```bash
+sudo service mysql restart
+```
+
+* To verify MySQL was configured correctly, use netstat -l. You should see your `[serverip]:mysql` or `[serverip]:3306`:
+```bash
+brichbourg@db-1:~$ netstat -l
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 *:ssh                   *:*                     LISTEN     
+tcp        0      0 *:mysql                 *:*                     LISTEN     
+tcp6       0      0 [::]:ssh                [::]:*                  LISTEN  
+```
+
+### Final Web/App Server Configuration (Required)
+
+Make sure you have run the `install.sh` shell script first, as that script will create and copy a configuration file needed for the application to run.
+
+You need to edit your `/etc/mtwa/mtwa.conf` file on all of the servers and change the name `appserver.company.com` and `dbserver.company.com` listed in that file to the DNS names or IP addresses of the servers or load balancers you are going to use.
+
+Here is what the `/etc/mtwa/mtwa.conf` file looks like:
+```bash
+# Multi-Tier-App-Demo configuration file
+
+# Enter the name of the app server or load balancer (DNS or IP address; DNS preferred)
+AppServerName = appserver.company.com
+# Enter the name of the MySQL server (DNS or IP address; DNS preferred)
+DBServerName = dbserver.company.com
+```
+It is recommended that you use DNS if possible, but IP address should work too.
+
+### Configure Bash Menus (Optional)
+
+Here we will configure the bash shell menu scripts that can be configured so that you can use a menu to start and stop services instead of having to type them into the CLI manually. The idea here is that this makes demos go faster and smoother.  
+
+* Install Dialog:
+```bash
+sudo apt-get install dialog
+```
+
+* Move Script File:
+You will need to copy the correct menu script *depending on the server you are configuring (Web, App or DB)*. The following example
