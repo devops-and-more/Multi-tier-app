@@ -27,17 +27,43 @@ On the front page, we could either: view the table in the database, insert an el
 * Apache/2.4.52 (Ubuntu)
 * MySQL Ver 8.0.39-0ubuntu0.22.04.1 for Linux on x86_64 (Ubuntu)
 
+
 ## Screenshots
 
 Here is a screenshot of the application.
 
 ### Main Menu: 
 
-<div>
-    <img src="screenshots/view.jpg" alt="Screenshot 1" width="300" style="display:inline-block; margin-right:10px;">
-    <img src="screenshots/enterdata.jpg" alt="Screenshot 2" width="300" style="display:inline-block; margin-right:10px;">
-    <img src="screenshots/clear.jpg" alt="Screenshot 3" width="300" style="display:inline-block;">
+<div style="display: flex; gap: 10px;">
+    <div style="position: relative; display: inline-block;">
+        <img src="screenshots/view.jpg" alt="Screenshot 1" width="300" 
+             style="display:inline-block; cursor: pointer;" 
+             onmouseover="this.style.transform='scale(1.1)';" 
+             onmouseout="this.style.transform='scale(1)';" />
+        <div style="display: none; position: absolute; top: -50%; left: 50%; transform: translate(-50%, -100%);">
+            <img src="screenshots/view.jpg" alt="Screenshot 1 Popup" width="600" style="border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.5);" />
+        </div>
+    </div>
+    <div style="position: relative; display: inline-block;">
+        <img src="screenshots/enterdata.jpg" alt="Screenshot 2" width="300" 
+             style="display:inline-block; cursor: pointer;" 
+             onmouseover="this.style.transform='scale(1.1)';" 
+             onmouseout="this.style.transform='scale(1)';" />
+        <div style="display: none; position: absolute; top: -50%; left: 50%; transform: translate(-50%, -100%);">
+            <img src="screenshots/enterdata.jpg" alt="Screenshot 2 Popup" width="600" style="border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.5);" />
+        </div>
+    </div>
+    <div style="position: relative; display: inline-block;">
+        <img src="screenshots/clear.jpg" alt="Screenshot 3" width="300" 
+             style="display:inline-block; cursor: pointer;" 
+             onmouseover="this.style.transform='scale(1.1)';" 
+             onmouseout="this.style.transform='scale(1)';" />
+        <div style="display: none; position: absolute; top: -50%; left: 50%; transform: translate(-50%, -100%);">
+            <img src="screenshots/clear.jpg" alt="Screenshot 3 Popup" width="600" style="border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.5);" />
+        </div>
+    </div>
 </div>
+
 
 ## Installation Instructions
 
