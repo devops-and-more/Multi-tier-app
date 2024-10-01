@@ -85,7 +85,20 @@ sudo sed -i '/<VirtualHost \*:80>/a \
     DirectoryIndex index.py \
 </Directory>' /etc/apache2/sites-available/000-default.conf
 ```
+Disable the Event MPM and enable the Prefork MPM along with the CGI module in Apache. Then, restart the Apache server to apply these changes.
+```bash
+  sudo a2dismod mpm_event
+  sudo a2enmod mpm_prefork cgi
+  sudo service apache2 restart
+```
 
+Change the owner and the permissions of the directory in order the files to be owned by apache user and allowed to be excuted by anyone
+```bash
+# Change permissions for the appdemo directory to 755 (read and execute for others)
+sudo chmod 755 /var/www/html/appdemo
+# Change ownership of the appdemo directory to www-data (Apache user)
+sudo chown -R www-data:www-data /var/www/html/appdemo
+```
 ### Web server configs:
 The web server needs to accept all inbound connections therefore:
 Changing Listen 80 to Listen 0.0.0.0:80: This modification makes Apache listen for incoming connections on port 80 from any IP address (0.0.0.0) rather than just the local host.
@@ -124,15 +137,17 @@ sudo apt-get install mysql-server -y
 ```
 * Download the initial SQL file:
 ```bash
-wget "https://github.com/devops-and-more/Multi-tier-app/tree/master/sql/create_db_table.sql"
+wget "https://raw.githubusercontent.com/devops-and-more/Multi-tier-app/refs/heads/master/sql/create_db_table.sql"
 ```
 
 * Now log into your MySQL server as root where your pwd should contains the downloaded file (.sql); because you need it once you are inside mysql:
 ```bash
-mysql -u root -p
+sudo mysql -u root -p
 # <enter your root password>
-# after logging create the table from the file
-source ~/create_db_table.sql;
+```
+```bash
+# after logging create the table from the file 
+source source /home/vagrant/create_db_table.sql;
 ```
 
 Here is the SQL code being injected:
@@ -159,10 +174,18 @@ CREATE USER 'appdemo'@'%' IDENTIFIED BY 'appdemo';
 # Grant all privileges on the 'appdemo' database to the user 'appdemo', allowing them to grant these privileges to other users.
 GRANT ALL PRIVILEGES ON appdemo.* TO 'appdemo'@'%' WITH GRANT OPTION;
 ```
-
+That user and password will be used by the app server to authenticate to mysql, if you change them here you should change the python file related to the database (viewdb, commitdb-ap ...)
 * Edit `/etc/mysql/mysql.conf.d/mysqld.cnf` to allow for network connections. Use VI or NANO to edit and change `bind-address = 127.0.0.1` to `bind-address = *`. This will tell MySQL to listen for connections on port TCP:3306 on all interfaces:
+```bash
+sudo sed -i '0,/^bind-address\s*=\s*127.0.0.1/s|^bind-address\s*=\s*127.0.0.1|bind-address = *|' /etc/mysql/mysql.conf.d/mysqld.cnf
+```
+ To chkeck on what mysql is listening:
+ ```bash
+ sudo apt update
+sudo apt install net-tools
+sudo netstat -tuln | grep mysql
+```
 
-sudo sed -i bind-address = 127.0.0.1|bind-address = * /etc/mysql/mysql.conf.d/mysqld.cnf
 
 
 ### ####################################################################################"""
