@@ -52,16 +52,6 @@ sudo apt install apache2 -y
 sudo apt update
 sudo apt install python3 python3-pip -y
 ```
-* Clone the repo:
-```bash
-sudo apt-get install git
-git clone https://github.com/devops-and-more/Multi-tier-app.git
-```
-* run the script dedecated to place the files inside /var/www/html/, if you have some issues with the script you can copy the files manually:
-```bash
-cd Multi-Tier-App-Demo/
-sudo bash install.sh
-```
   
 * Modify Apaches configs:
 To point to the app directory and to allow cgi
@@ -91,7 +81,16 @@ Disable the Event MPM and enable the Prefork MPM along with the CGI module in Ap
   sudo a2enmod mpm_prefork cgi
   sudo service apache2 restart
 ```
-
+* Clone the repo:
+```bash
+sudo apt-get install git
+git clone https://github.com/devops-and-more/Multi-tier-app.git
+```
+* run the script dedecated to place the files inside /var/www/html/, if you have some issues with the script you can copy the files manually:
+```bash
+cd Multi-Tier-App-Demo/
+sudo bash install.sh
+```
 Change the owner and the permissions of the directory in order the files to be owned by apache user and allowed to be excuted by anyone
 ```bash
 # Change permissions for the appdemo directory to 755 (read and execute for others)
@@ -99,6 +98,9 @@ sudo chmod 755 /var/www/html/appdemo
 # Change ownership of the appdemo directory to www-data (Apache user)
 sudo chown -R www-data:www-data /var/www/html/appdemo
 ```
+
+
+
 ### Web server configs:
 The web server needs to accept all inbound connections therefore:
 Changing Listen 80 to Listen 0.0.0.0:80: This modification makes Apache listen for incoming connections on port 80 from any IP address (0.0.0.0) rather than just the local host.
