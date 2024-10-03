@@ -51,6 +51,8 @@ sudo apt install apache2 -y
 ```bash
 sudo apt update
 sudo apt install python3 python3-pip -y
+pip install beautifulsoup4
+pip install lxml html5lib
 ```
   
 * Modify Apaches configs:
@@ -73,6 +75,7 @@ sudo sed -i '/<VirtualHost \*:80>/a \
 <Directory /var/www/html> \
     Options +ExecCGI \
     DirectoryIndex index.py \
+    AddHandler cgi-script .py \
 </Directory>' /etc/apache2/sites-available/000-default.conf
 ```
 Disable the Event MPM and enable the Prefork MPM along with the CGI module in Apache. Then, restart the Apache server to apply these changes.
@@ -88,7 +91,7 @@ git clone https://github.com/devops-and-more/Multi-tier-app.git
 ```
 * run the script dedecated to place the files inside /var/www/html/, if you have some issues with the script you can copy the files manually:
 ```bash
-cd Multi-Tier-App-Demo/
+cd Multi-tier-app/
 sudo bash install.sh
 ```
 Change the owner and the permissions of the directory in order the files to be owned by apache user and allowed to be excuted by anyone
