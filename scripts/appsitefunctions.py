@@ -220,7 +220,9 @@ def printserverinfo(hostname,ipaddress,webprotocol,serverport):
 def printsite(modulename,formname_or_cmd,formnotes,formcount):
 
         if os.path.exists('base.html'):
-                basehtml = open('base.html').read().splitlines()
+                # Read base.html and remove leading/trailing whitespace from each line
+                basehtml = [line.strip() for line in open('base.html').readlines()]
+
 
                 print ( 'Content-type: text/html\n\n')
 

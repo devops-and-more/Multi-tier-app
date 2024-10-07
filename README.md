@@ -51,8 +51,14 @@ sudo apt install apache2 -y
 ```bash
 sudo apt update
 sudo apt install python3 python3-pip -y
-pip install beautifulsoup4
-pip install lxml html5lib
+```
+
+In order to give apache user(www-data) access to pip packages we need to creates the /var/www/.local directory with root privileges, ensuring it exists for further use. Then change the ownership of that directory to the www-data user, granting Apache permission to access it. Finally, install the pip packages (beautifulsoup4, mysql-connector-python)  for the www-data user, ensuring it is available for scripts running under Apache
+```bash
+sudo mkdir -p /var/www/.local
+sudo chown -R www-data:www-data /var/www/.local
+sudo -u www-data pip3 install --user beautifulsoup4
+sudo -u www-data pip3 install --user mysql-connector-python
 ```
   
 * Modify Apaches configs:
@@ -98,6 +104,7 @@ Change the owner and the permissions of the directory in order the files to be o
 ```bash
 # Change permissions for the appdemo directory to 755 (read and execute for others)
 sudo chmod 755 /var/www/html/appdemo
+sudo chmod 755 /var/www/html/appdemo/*
 # Change ownership of the appdemo directory to www-data (Apache user)
 sudo chown -R www-data:www-data /var/www/html/appdemo
 ```
@@ -105,18 +112,13 @@ sudo chown -R www-data:www-data /var/www/html/appdemo
 
 
 ### Web server configs:
-The web server needs to accept all inbound connections therefore:
-Changing Listen 80 to Listen 0.0.0.0:80: This modification makes Apache listen for incoming connections on port 80 from any IP address (0.0.0.0) rather than just the local host.
-```bash
-sudo sed -i 's|Listen 80|Listen 0.0.0.0:80|' /etc/apache2/ports.conf
-sudo systemctl restart apache2
-```
+No need for configuration because apache is comes with default configs to listen on port 80 on all interfaces
 ### App server configs:
-* Configure apache to listen on port 8080 (just to distinguish between the two) to the connections comming from localhost and web server only, this is for security reasons
+* Configure apache to listen on port 8080 (just to distinguish between the two) to the connections on all interfaces:
 
 ```bash
-sudo sed -i 's|Listen 80|Listen localhost:8080\nListen web:8080|' /etc/apache2/ports.conf
-sudo sed -i 's|<VirtualHost \*:80>|<VirtualHost localhost:8080 web:8080>|' /etc/apache2/sites-available/000-default.conf # note that I used \* otherwise sed will not find a match
+sudo sed -i 's|Listen 80|Listen 8080|' /etc/apache2/ports.conf
+sudo sed -i 's|<VirtualHost \*:80>|<VirtualHost *:8080>|' /etc/apache2/sites-available/000-default.conf # note that I used \* otherwise sed will not find a match
 ```
 * Install package to allow app servers to connect to MySQL:
 ```bash
@@ -133,6 +135,21 @@ DBServerName = db
 ```
 those two dns names are already configured inside /etc/hosts, if you use diffrent names you should change the file here to match your /etc/hosts file.
 Becareful the well functioning of the app depends on this!!!
+Filetering Http requests on app srv:
+the app server should only accespt requests comming from web ip no one
+else, therfore we install firewalld to filter the requests:
+```bash
+sudo apt update
+sudo apt install firewalld -y
+sudo systemctl enable firewalld --now #start and enable
+# define the rules:
+# 1- Allow HTTP traffic on port 8080 from the web ip which is 10.10.10.20
+sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="10.10.10.20" port port="8080" protocol="tcp" accept'
+# 2- Deny other Http requests:
+sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" port port="8080" protocol="tcp" drop'
+# Reload :
+sudo firewall-cmd --reload
+```
 
 ### Mysql server:
 install mysql:
@@ -142,7 +159,7 @@ sudo apt-get install mysql-server -y
 ```
 * Download the initial SQL file:
 ```bash
-wget "https://raw.githubusercontent.com/devops-and-more/Multi-tier-app/refs/heads/master/sql/create_db_table.sql"
+wget "https://raw.githubusercontent.com/devops-and-more/Multi-tier-app/refs/heads/main/sql/create_db_table.sql"
 ```
 
 * Now log into your MySQL server as root where your pwd should contains the downloaded file (.sql); because you need it once you are inside mysql:
@@ -152,7 +169,7 @@ sudo mysql -u root -p
 ```
 ```bash
 # after logging create the table from the file 
-source source /home/vagrant/create_db_table.sql;
+source /home/vagrant/create_db_table.sql;
 ```
 
 Here is the SQL code being injected:
@@ -182,152 +199,64 @@ GRANT ALL PRIVILEGES ON appdemo.* TO 'appdemo'@'%' WITH GRANT OPTION;
 That user and password will be used by the app server to authenticate to mysql, if you change them here you should change the python file related to the database (viewdb, commitdb-ap ...)
 * Edit `/etc/mysql/mysql.conf.d/mysqld.cnf` to allow for network connections. Use VI or NANO to edit and change `bind-address = 127.0.0.1` to `bind-address = *`. This will tell MySQL to listen for connections on port TCP:3306 on all interfaces:
 ```bash
-sudo sed -i '0,/^bind-address\s*=\s*127.0.0.1/s|^bind-address\s*=\s*127.0.0.1|bind-address = *|' /etc/mysql/mysql.conf.d/mysqld.cnf
+sudo sed -i 's|^bind-address\s*=\s*127.0.0.1|bind-address = 0.0.0.0|g' /etc/mysql/mysql.conf.d/mysqld.cnf
+# Restart mysql
+sudo systemctl restart mysql
 ```
  To chkeck on what mysql is listening:
  ```bash
  sudo apt update
 sudo apt install net-tools
-sudo netstat -tuln | grep mysql
+sudo netstat -tulnp | grep mysql
 ```
 
 
 
-### ####################################################################################"""
-## ####################################################################################"""""""
 
-### Web Server Installation (Required)
 
-* Update Advanced Packaging Tool:
+HTTPS:
+Openssl is already installed on ubuntu 22.
+
+
+
+Create a directory to store the certificate and key, then generate the self-signed cert/key
 ```bash
-sudo apt-get update
-sudo apt-get dist-upgrade
+sudo mkdir /etc/apache2/ssl
+
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt
 ```
+You will be prompted to enter some information for the certificate, you can leave everything blank
 
+Add to the config file of apache those https lines:
 
-
-### App Server Installation (Required)
-
-For the app server, **FOLLOW THE WEB SERVER DIRECTIONS ABOVE**, but make two changes to have Apache2 listen on port 8080 vs 80.
-
-* Run the following commands:
 ```bash
-wget "https://s3.amazonaws.com/richbourg-s3/mtwa/app/ports.conf"
-wget "https://s3.amazonaws.com/richbourg-s3/mtwa/app/000-default.conf"
-sudo cp 000-default.conf /etc/apache2/sites-enabled/
-sudo cp ports.conf /etc/apache2/
+sudo bash -c 'cat <<EOL >> /etc/apache2/sites-available/000-default.conf
+<VirtualHost  *:443>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html/appdemo
+
+    SSLEngine on
+    SSLCertificateFile /etc/apache2/ssl/apache.crt
+    SSLCertificateKeyFile /etc/apache2/ssl/apache.key
+
+    <Directory /var/www/html>
+        Options +ExecCGI
+        DirectoryIndex index.py
+        AddHandler cgi-script .py
+    </Directory>
+
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+EOL'
 ```
 
-* Restart Apache2:
+
+Enable the SSL module and the default configs, Restart apache
+
 ```bash
-sudo service apache2 restart
+
+sudo a2enmod ssl
+sudo a2ensite default-ssl
+sudo systemctl restart apache2
 ```
-
-### MySQL Server Installation (Required)
-
-This is going to be on a separate server from your web/app server.
-
-* Update Advanced Packaging Tool:
-```bash
-sudo apt-get update
-```
-
-* Install MySQL:
-```bash
-sudo apt-get install mysql-server
-```
-**Make sure you create and remember your MySQL root password!**
-
-* Download the initial SQL file:
-```bash
-wget "https://raw.githubusercontent.com/brichbourg/Multi-Tier-App-Demo/master/sql/create_db_table.sql"
-```
-
-* Now log into your MySQL server as root:
-```bash
-mysql -u root -p
-<enter your root password>
-```
-
-* Run this command.  
-**NOTE**: The example below assumes you ran the wget command from your home directory. Modify as needed:
-```sql
-mysql> source ~/create_db_table.sql;
-```
-
-Here is the SQL code being injected:
-```sql
-CREATE DATABASE `appdemo`;
-USE `appdemo`;
-CREATE TABLE `demodata` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(100),
-    `notes` TEXT,
-    `timestamp` TIMESTAMP,
-    PRIMARY KEY (`id`),
-    KEY (`name`)
-);
-
-CREATE TABLE `demodata_erase_log` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `timestamp` TIMESTAMP,
-    PRIMARY KEY (`id`),
-    KEY (`timestamp`)
-);
-
-CREATE USER 'appdemo'@'%' IDENTIFIED BY 'appdemo';
-GRANT ALL PRIVILEGES ON appdemo.* TO 'appdemo'@'%' WITH GRANT OPTION;
-```
-
-* Edit `/etc/mysql/mysql.conf.d/mysqld.cnf` to allow for network connections. Use VI or NANO to edit and change `bind-address = 127.0.0.1` to `bind-address = *`. This will tell MySQL to listen for connections on port TCP:3306 on all interfaces:
-```bash
-sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
-```
-```
-...
-bind-address = *
-```
-
-* Restart MySQL:
-```bash
-sudo service mysql restart
-```
-
-* To verify MySQL was configured correctly, use netstat -l. You should see your `[serverip]:mysql` or `[serverip]:3306`:
-```bash
-brichbourg@db-1:~$ netstat -l
-Active Internet connections (only servers)
-Proto Recv-Q Send-Q Local Address           Foreign Address         State      
-tcp        0      0 *:ssh                   *:*                     LISTEN     
-tcp        0      0 *:mysql                 *:*                     LISTEN     
-tcp6       0      0 [::]:ssh                [::]:*                  LISTEN  
-```
-
-### Final Web/App Server Configuration (Required)
-
-Make sure you have run the `install.sh` shell script first, as that script will create and copy a configuration file needed for the application to run.
-
-You need to edit your `/etc/mtwa/mtwa.conf` file on all of the servers and change the name `appserver.company.com` and `dbserver.company.com` listed in that file to the DNS names or IP addresses of the servers or load balancers you are going to use.
-
-Here is what the `/etc/mtwa/mtwa.conf` file looks like:
-```bash
-# Multi-Tier-App-Demo configuration file
-
-# Enter the name of the app server or load balancer (DNS or IP address; DNS preferred)
-AppServerName = appserver.company.com
-# Enter the name of the MySQL server (DNS or IP address; DNS preferred)
-DBServerName = dbserver.company.com
-```
-It is recommended that you use DNS if possible, but IP address should work too.
-
-### Configure Bash Menus (Optional)
-
-Here we will configure the bash shell menu scripts that can be configured so that you can use a menu to start and stop services instead of having to type them into the CLI manually. The idea here is that this makes demos go faster and smoother.  
-
-* Install Dialog:
-```bash
-sudo apt-get install dialog
-```
-
-* Move Script File:
-You will need to copy the correct menu script *depending on the server you are configuring (Web, App or DB)*. The following example
