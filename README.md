@@ -135,21 +135,7 @@ DBServerName = db
 ```
 those two dns names are already configured inside /etc/hosts, if you use diffrent names you should change the file here to match your /etc/hosts file.
 Becareful the well functioning of the app depends on this!!!
-Filetering Http requests on app srv:
-the app server should only accespt requests comming from web ip no one
-else, therfore we install firewalld to filter the requests:
-```bash
-sudo apt update
-sudo apt install firewalld -y
-sudo systemctl enable firewalld --now #start and enable
-# define the rules:
-# 1- Allow HTTP traffic on port 8080 from the web ip which is 10.10.10.20
-sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="10.10.10.20" port port="8080" protocol="tcp" accept'
-# 2- Deny other Http requests:
-sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" port port="8080" protocol="tcp" drop'
-# Reload :
-sudo firewall-cmd --reload
-```
+
 
 ### Mysql server:
 install mysql:
@@ -259,4 +245,26 @@ Enable the SSL module and the default configs, Restart apache
 sudo a2enmod ssl
 sudo a2ensite default-ssl
 sudo systemctl restart apache2
+```
+Further Security requirement:
+We can add some security precautions such: app server will only accept http requests from web server, mysql server can only communicate with app server, in local we can realize that with some filtering tools like firewalld, iptables, in the cloud we could use security group and network acl in aws:
+An example is giving here by firewalld:
+
+
+Filetering Http requests on app srv:
+the app server should only accespt requests comming from web ip no one
+else, therfore we install firewalld to filter the requests:
+```bash
+sudo apt update
+sudo apt install firewalld -y
+sudo systemctl enable firewalld --now 
+# define the rules:
+# 1- Allow HTTP traffic on port 8080 from the web ip which is 10.10.10.20
+sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="10.10.10.20" port port="8080" protocol="tcp" accept'
+# 2- Deny other Http requests:
+sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" port port="8080" protocol="tcp" drop'
+# Reload :
+sudo firewall-cmd --reload
+sudo systemctl stop firewalld
+sudo systemctl enable firewalld
 ```
