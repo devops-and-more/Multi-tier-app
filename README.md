@@ -274,3 +274,16 @@ sudo firewall-cmd --reload
 sudo systemctl stop firewalld
 sudo systemctl enable firewalld
 ```
+### Mysql:
+Accept only connections from 10.10.10.10 (app ip), deny others:
+```bash
+sudo apt update
+sudo apt install firewalld -y
+sudo systemctl enable firewalld --now 
+# define the rules:
+sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="10.10.10.10" port port="3306" protocol="tcp" accept' && \
+sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" port port="3306" protocol="tcp" drop' && \
+sudo firewall-cmd --reload
+sudo systemctl stop firewalld
+sudo systemctl enable firewalld
+```
