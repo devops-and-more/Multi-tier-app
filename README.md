@@ -29,7 +29,7 @@ On the front page, we could either: view the table in the database, insert an el
 
 ## Screenshots
 
-Here is a screenshot of the application.
+Here are 3 screenshots of the application.
 
 ### Main Menu: 
 
@@ -39,6 +39,13 @@ Here is a screenshot of the application.
     <img src="screenshots/clear.jpg" alt="Screenshot 3" width="300" style="display:inline-block;">
 </div>
 
+## Provisioning the infrastructure: 
+The vagrantfile will provision 3 servers: web, app and db.
+After installing Vagrant and downloading the vagrantfile, you can provision the three vbox vms:
+```bash
+vagrant init
+vagrant up
+```
 ## Installation Instructions
 
 ### Web and App servers:
@@ -58,7 +65,6 @@ In order to give apache user(www-data) access to pip packages we need to creates
 sudo mkdir -p /var/www/.local
 sudo chown -R www-data:www-data /var/www/.local
 sudo -u www-data pip3 install --user beautifulsoup4
-sudo -u www-data pip3 install --user mysql-connector-python
 ```
   
 * Modify Apaches configs:
@@ -119,10 +125,14 @@ No need for configuration because apache is comes with default configs to listen
 ```bash
 sudo sed -i 's|Listen 80|Listen 8080|' /etc/apache2/ports.conf
 sudo sed -i 's|<VirtualHost \*:80>|<VirtualHost *:8080>|' /etc/apache2/sites-available/000-default.conf # note that I used \* otherwise sed will not find a match
+
 ```
 * Install package to allow app servers to connect to MySQL:
 ```bash
-pip install mysql-connector-python
+sudo -u www-data pip3 install --user mysql-connector-python
+# install it as the apache user (www-data), otherwise apache in app server will be unable to query the database
+# Restart apache
+sudo systemctl restart apache2
 ```
  the `/etc/mtwa/mtwa.conf` file looks like:
 ```bash
@@ -200,15 +210,11 @@ sudo netstat -tulnp | grep mysql
 
 
 
-HTTPS:
+## HTTPS:
 Openssl is already installed on ubuntu 22.
-
-
-
 Create a directory to store the certificate and key, then generate the self-signed cert/key
 ```bash
 sudo mkdir /etc/apache2/ssl
-
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt
 ```
 You will be prompted to enter some information for the certificate, you can leave everything blank

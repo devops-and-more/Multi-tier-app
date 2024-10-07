@@ -9,7 +9,7 @@ sed -e '/^.*ubuntu-bionic.*/d' -i /etc/hosts
 
 # Update /etc/hosts about other hosts
 cat >> /etc/hosts <<EOF
-10.10.10.10 appp
+10.10.10.10 app
 10.10.10.20 web
 10.10.10.30 db
 EOF
