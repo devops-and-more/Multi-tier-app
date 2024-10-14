@@ -34,9 +34,10 @@ Here are 3 screenshots of the application.
 ### Main Menu: 
 
 <div>
-    <img src="screenshots/view.jpg" alt="Screenshot 1" width="300" style="display:inline-block; margin-right:10px;">
-    <img src="screenshots/enterdata.jpg" alt="Screenshot 2" width="300" style="display:inline-block; margin-right:10px;">
-    <img src="screenshots/clear.jpg" alt="Screenshot 3" width="300" style="display:inline-block;">
+    <img src="screenshots/home.jpg" alt="Screenshot 1" width="300" style="display:inline-block; margin-right:10px;">
+    <img src="screenshots/view.jpg" alt="Screenshot 2" width="300" style="display:inline-block; margin-right:10px;">
+    <img src="screenshots/enterdata.jpg" alt="Screenshot 3" width="300" style="display:inline-block; margin-right:10px;">
+    <img src="screenshots/clear.jpg" alt="Screenshot 4" width="300" style="display:inline-block;margin-right:10px;">
 </div>
 
 ## Provisioning the infrastructure: 
