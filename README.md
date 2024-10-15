@@ -278,6 +278,8 @@ sudo apt update
 sudo apt install firewalld -y
 sudo systemctl enable firewalld --now 
 # define the rules:
-sudo firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address="10.10.10.10" port port="3306" protocol="tcp" accept' && \
+sudo firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address="10.10.10.10" port port="3306" protocol="tcp" accept'
+sudo firewall-cmd --zone=public --remove-port=3306/tcp
+sudo firewall-cmd --runtime-to-permanent
 sudo firewall-cmd --reload
 ```
