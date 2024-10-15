@@ -4,7 +4,7 @@
 https://github.com/brichbourg/Multi-Tier-App-Demo  
 by: Brantley Richbourg (brichbourg@gmail.com)
 
-This is a modified repo; multiple updates have been made to the Python codes. The original repo has various errors: syntax errors, command errors, etc.  
+This is a modified repo; multiple updates had been made to the Python codes. The original repo had various errors: syntax errors, command errors, etc.  
 I will create a video for this repo to run the whole configurations under:
 1. VMS/EC2: the YouTube video: https://youtu.be/lYiEIKMX7Ek?si=uzz9FiUClg8UuD3E
 2. Docker/Kubernetes:
