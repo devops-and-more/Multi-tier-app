@@ -1,7 +1,7 @@
 Vagrant.configure("2") do |config|
     config.vm.box = "bento/ubuntu-22.04"
     config.vm.box_check_update = false
-    
+    config.vm.boot_timeout = 500
     
     config.vm.define "app" do |node|
 
@@ -21,6 +21,7 @@ end
 ########################################################
 Vagrant.configure("2") do |config|
     config.vm.box = "bento/ubuntu-22.04"
+    config.vm.boot_timeout = 600
     config.vm.box_check_update = false
     config.vm.define "web" do |node|
         node.vm.provider "virtualbox" do |vb|
@@ -39,6 +40,7 @@ end
 ##############################################################
 Vagrant.configure("2") do |config|
     config.vm.box = "bento/ubuntu-22.04"
+    config.vm.boot_timeout = 600
     config.vm.box_check_update = false
     config.vm.define "db" do |node|
         node.vm.provider "virtualbox" do |vb|
