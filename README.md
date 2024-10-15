@@ -6,7 +6,7 @@ by: Brantley Richbourg (brichbourg@gmail.com)
 
 This is a modified repo; multiple updates have been made to the Python codes. The original repo has various errors: syntax errors, command errors, etc.  
 I will create a video for this repo to run the whole configurations under:
-1. VMS/EC2: the YouTube video:
+1. VMS/EC2: the YouTube video: https://youtu.be/lYiEIKMX7Ek?si=uzz9FiUClg8UuD3E
 2. Docker/Kubernetes:
 
 This repo comes with a Vagrant file to provision the machines under Virtual Box. To use the Vagrant file, you have to install Vagrant.
