@@ -267,13 +267,11 @@ sudo apt install firewalld -y
 sudo systemctl enable firewalld --now 
 # define the rules:
 # 1- Allow HTTP traffic on port 8080 from the web ip which is 10.10.10.20
-sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="10.10.10.20" port port="8080" protocol="tcp" accept'
+sudo firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address="10.10.10.20" port port="8080" protocol="tcp" accept'
 # 2- Deny other Http requests:
-sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" port port="8080" protocol="tcp" drop'
+sudo firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" port port="8080" protocol="tcp" drop'
 # Reload :
 sudo firewall-cmd --reload
-sudo systemctl stop firewalld
-sudo systemctl enable firewalld
 ```
 ### Mysql:
 Accept only connections from 10.10.10.10 (app ip), deny others:
@@ -282,9 +280,7 @@ sudo apt update
 sudo apt install firewalld -y
 sudo systemctl enable firewalld --now 
 # define the rules:
-sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="10.10.10.10" port port="3306" protocol="tcp" accept' && \
-sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" port port="3306" protocol="tcp" drop' && \
+sudo firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address="10.10.10.10" port port="3306" protocol="tcp" accept'
+sudo firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" port port="3306" protocol="tcp" drop' && \
 sudo firewall-cmd --reload
-sudo systemctl stop firewalld
-sudo systemctl enable firewalld
 ```
